@@ -210,20 +210,34 @@ export class SalesChartComponent {
 
   private groupDataByDay(): SalesData[] {
     const dayMap = new Map<string, number>();
+    const dayNameMap = new Map<string, string>();
 
     this.data.forEach((item: any) => {
-      const dateStr = item.properties?.Date?.date?.start;
+      const props = item.properties || {};
+      const dateStr = props.Date?.date?.start;
+
       if (dateStr) {
         const date = new Date(dateStr);
-        const dayKey = `${date.getDate()}`;
+        const dayNum = date.getDate();
+        const dayKey = `${dayNum}`;
 
-        const amount = item.properties?.Amount?.number || 0;
+        // Get hour or time label
+        const hours = date.getHours();
+        const timeLabel = `${hours}:00`;
+
+        dayNameMap.set(dayKey, timeLabel);
+
+        const amount = props.Receipt_amount?.number || props.Amount?.number || 0;
         dayMap.set(dayKey, (dayMap.get(dayKey) || 0) + amount);
       }
     });
 
     return Array.from(dayMap.entries())
-      .map(([day, sales]) => ({ day, sales }))
+      .map(([day, sales]) => ({
+        day: dayNameMap.get(day) || day,
+        sales
+      }))
+      .sort((a, b) => parseInt(a.day) - parseInt(b.day))
       .slice(0, 11);
   }
 
