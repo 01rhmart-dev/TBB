@@ -15,12 +15,7 @@ import { CommonModule } from '@angular/common';
 export class App {
   protected readonly title = signal('my-app');
   protected readonly dataSignal = signal<any[]>([]);
-  protected readonly selectedPeriod = signal<'today' | 'week' | 'month' | 'year'>('month');
-
-  protected readonly totalSales = computed(() => this.calculateTotalSales());
-  protected readonly totalOrders = computed(() => this.dataSignal().length);
-  protected readonly completedOrders = computed(() => this.dataSignal().filter((d: any) => d.properties?.Status?.select?.name === 'Completed').length);
-  protected readonly totalRevenue = computed(() => this.calculateTotalRevenue());
+  protected selectedPeriod: 'today' | 'week' | 'month' | 'year' = 'month';
 
   constructor(private http: HttpClient) {}
 
@@ -44,14 +39,22 @@ export class App {
     return this.dataSignal();
   }
 
-  private calculateTotalSales(): number {
+  get totalSales(): number {
     return this.dataSignal().reduce((sum: number, item: any) => {
       const amount = item.properties?.Amount?.number || 0;
       return sum + amount;
     }, 0);
   }
 
-  private calculateTotalRevenue(): number {
+  get totalOrders(): number {
+    return this.dataSignal().length;
+  }
+
+  get completedOrders(): number {
+    return this.dataSignal().filter((d: any) => d.properties?.Status?.select?.name === 'Completed').length;
+  }
+
+  get totalRevenue(): number {
     return this.dataSignal()
       .filter((d: any) => d.properties?.Status?.select?.name === 'Completed')
       .reduce((sum: number, item: any) => {
