@@ -143,22 +143,31 @@ export class BestSellingComponent {
   get topItems(): FoodItem[] {
     if (!this.data || this.data.length === 0) return [];
 
-    // Group by food item and count quantities
+    // Group by food item and aggregate quantities
     const itemMap = new Map<string, { name: string; price: number; quantity: number }>();
 
     this.data.forEach((item: any) => {
-      const itemName = item.properties?.Name?.title?.[0]?.plain_text || item.properties?.Title?.title?.[0]?.plain_text || 'Unnamed Item';
-      const itemPrice = item.properties?.Amount?.number || 0;
+      const props = item.properties || {};
+
+      // Extract name from various possible fields
+      const itemName = props.Name?.title?.[0]?.plain_text ||
+                      props.Title?.title?.[0]?.plain_text ||
+                      props.Item?.title?.[0]?.plain_text ||
+                      'Unnamed Item';
+
+      // Extract quantity and price
+      const quantity = props.Quantity?.number || 1;
+      const price = props.Receipt_amount?.number || props.Amount?.number || 0;
 
       if (itemMap.has(itemName)) {
         const existing = itemMap.get(itemName)!;
-        existing.quantity += 1;
-        existing.price = (existing.price + itemPrice) / 2; // Average price
+        existing.quantity += quantity;
+        existing.price = Math.max(existing.price, price); // Keep highest price
       } else {
         itemMap.set(itemName, {
           name: itemName,
-          price: itemPrice,
-          quantity: 1,
+          price: price,
+          quantity: quantity,
         });
       }
     });
