@@ -25,13 +25,17 @@ export class App {
 
   async fetchAllData(): Promise<void> {
     const body: any = {};
-    const proxyResponse: any = await firstValueFrom(
-      this.http.post('http://localhost:3000/api/getAllPagesFromDB', body),
-    );
+    try {
+      const proxyResponse: any = await firstValueFrom(
+        this.http.post('/api/getAllPagesFromDB', body),
+      );
 
-    console.log('proxyResponse', proxyResponse);
-    if (proxyResponse && proxyResponse.results) {
-      this.dataSignal.set(proxyResponse.results);
+      console.log('proxyResponse', proxyResponse);
+      if (proxyResponse && proxyResponse.results) {
+        this.dataSignal.set(proxyResponse.results);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
   }
 
