@@ -1,13 +1,13 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, CommonModule } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { SalesChartComponent } from './sales-chart';
 import { DataTableComponent } from './data-table';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, SalesChartComponent, DataTableComponent],
+  imports: [RouterOutlet, SalesChartComponent, DataTableComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
