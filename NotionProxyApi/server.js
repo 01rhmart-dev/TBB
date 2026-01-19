@@ -6,10 +6,22 @@ console.log("ENV:", process.env.NOTION_TOKEN);
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 
-app.use(cors());
+// Enhanced CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+}));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static Angular app files
+app.use(express.static(path.join(__dirname, '../tbb-dashboard/dist/my-app/browser')));
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const fs = require('fs');
@@ -275,6 +287,11 @@ app.post('/api/getPropFirmAccountSettings', async (req, res) => {
   } catch (err) {
     res.status(err.response?.status || 500).json(err.response?.data || { error: 'Unknown error' });
   }
+});
+
+// SPA fallback - serve index.html for any non-API routes (MUST BE LAST)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '../tbb-dashboard/dist/my-app/browser/index.html'));
 });
 
 app.listen(3000, () => console.log('✅ Server running at http://localhost:3000'));
