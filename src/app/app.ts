@@ -1,37 +1,39 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SalesChartComponent } from './sales-chart';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { DataTableComponent } from './data-table';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SalesChartComponent],
+  imports: [RouterOutlet, SalesChartComponent, DataTableComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('my-app');
+  protected readonly getAllData = signal<any[]>([]);
 
-  constructor(private http: HttpClient){
-
-  }
+  constructor(private http: HttpClient) {}
 
   async ngOnInit() {
-    this.getAllData();
+    this.fetchAllData();
   }
 
-  async getAllData(): Promise<void> {
+  async fetchAllData(): Promise<void> {
     const body: any = {};
-      const proxyResponse: any = await firstValueFrom(
-      this.http.post("http://localhost:3000/api/getAllPagesFromDB", body)
+    const proxyResponse: any = await firstValueFrom(
+      this.http.post('http://localhost:3000/api/getAllPagesFromDB', body),
     );
 
-    console.log("proxyResponse",proxyResponse)
-
+    console.log('proxyResponse', proxyResponse);
+    if (proxyResponse && proxyResponse.results) {
+      this.getAllData.set(proxyResponse.results);
+    }
   }
 
-    async getAllPagesFromDB(startDate:Date,endDate:Date){ 
+  async getAllPagesFromDB(startDate: Date, endDate: Date) {
     const formattedStartDate = startDate
       ? `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`
       : '';
@@ -40,26 +42,25 @@ export class App {
       : '';
 
     const body = {
-      "filter": {
-        "and": [
+      filter: {
+        and: [
           {
-            "property": "Date",
-            "date": {
-              "on_or_after": formattedStartDate
-            }
+            property: 'Date',
+            date: {
+              on_or_after: formattedStartDate,
+            },
           },
           {
-            "property": "Date",
-            "date": {
-              "on_or_before": formattedEndDate
-            }
-          }
-        ]
-      }
-    }
-    this.http.post("http://localhost:3000/api/getAllPagesFromDB", body)
-    .subscribe({
-      next: async (res:any) => {
+            property: 'Date',
+            date: {
+              on_or_before: formattedEndDate,
+            },
+          },
+        ],
+      },
+    };
+    this.http.post('http://localhost:3000/api/getAllPagesFromDB', body).subscribe({
+      next: async (res: any) => {
         // console.log(res)
         // this.trades = [];
         res.results.map((prop: any) => {
@@ -69,8 +70,8 @@ export class App {
           const minutes = d.getMinutes();
           // Skip weekends (0 = Sunday, 6 = Saturday)
           // AND exclude the notion entry if hh:mm = 00:00
-          if (dayOfWeek !== 0 && dayOfWeek !== 6 && hours !== 0 && minutes !== 0)  {
-            // this.trades.push({ tradeDate: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${d.getFullYear()}`, 
+          if (dayOfWeek !== 0 && dayOfWeek !== 6 && hours !== 0 && minutes !== 0) {
+            // this.trades.push({ tradeDate: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${d.getFullYear()}`,
             // tradeId: prop.id });
           }
         });
@@ -82,7 +83,7 @@ export class App {
         //   let relationId
         //   try {
         //      relationId = this.relations.filter(rel => rel.relationName === trade.tradeDate)[0].relationId
-            
+
         //   } catch (error) {
         //     console.log("ERROR patching:",error)
         //   }
@@ -122,8 +123,8 @@ export class App {
       },
       error: (err) => {
         // this.patchingError = true
-        console.error('Error:', err)
-      }
+        console.error('Error:', err);
+      },
     });
   }
 }
