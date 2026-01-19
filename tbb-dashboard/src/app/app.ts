@@ -45,7 +45,7 @@ export class App {
 
   get totalSales(): number {
     return this.dataSignal().reduce((sum: number, item: any) => {
-      const amount = item.properties?.Receipt_amount?.number || 0;
+      const amount = item.properties?.['Receipt Amount']?.number || 0;
       return sum + amount;
     }, 0);
   }
@@ -68,7 +68,7 @@ export class App {
         return status.toLowerCase() === 'completed' || status.toLowerCase() === 'paid';
       })
       .reduce((sum: number, item: any) => {
-        const amount = item.properties?.Receipt_amount?.number || 0;
+        const amount = item.properties?.['Receipt Amount']?.number || 0;
         return sum + amount;
       }, 0);
   }
