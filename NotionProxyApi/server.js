@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static Angular app files
-app.use(express.static(path.join(__dirname, '../tbb-dashboard/dist/my-app')));
+app.use(express.static(path.join(__dirname, '../tbb-dashboard/dist/my-app/browser')));
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const fs = require('fs');
