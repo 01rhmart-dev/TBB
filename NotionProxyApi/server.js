@@ -1,3 +1,8 @@
+require('dotenv').config({
+  path: __dirname + '/.env'
+});
+console.log("ENV:", process.env.NOTION_TOKEN);
+
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -5,7 +10,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const fs = require('fs');
@@ -13,7 +17,11 @@ const vm = require('vm'); // ✅ Add this
 
 const fcmAdmin = require("firebase-admin");
 
-const NOTION_TOKEN = process.env.NOTION_TOKEN; // 🔐 Replace with your Notion token
+const NOTION_TOKEN = process.env.NOTION_TOKEN;
+
+if (!NOTION_TOKEN) {
+  throw new Error("NOTION_TOKEN is missing"); // 🔐 Replace with your Notion token
+}
 const NOTION_VERSION = '2022-06-28';
 
 
@@ -59,7 +67,7 @@ app.post('/api/getRelationName', async (req, res) => {
 app.post('/api/getAllPagesFromDB', async (req, res) => {
   try {
     const response = await axios.post(
-      'https://api.notion.com/v1/databases/ef10ac6f79524ea49e4bc0997e0ee704/query',
+      'https://api.notion.com/v1/databases/2ed1ee2b-915f-8060-a2ca-deb203b60012/query',
       req.body,
       {
         headers: {
