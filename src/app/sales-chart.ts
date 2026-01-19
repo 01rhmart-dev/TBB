@@ -32,7 +32,7 @@ interface SalesData {
           <line [attr.x1]="margin" [attr.y1]="chartHeight - margin" [attr.x2]="chartWidth - margin" [attr.y2]="chartHeight - margin" class="axis" />
 
           <!-- Bars -->
-          @for (item of salesData; let i = $index) {
+          @for (item of salesData; let i = $index; track item.month) {
             <g [attr.class]="'bar-group'">
               <!-- Bar -->
               <rect
