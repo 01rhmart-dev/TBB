@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
               </tr>
             </thead>
             <tbody>
-              @for (item of data; let i = $index; let isOdd = $odd) {
+              @for (item of data; let i = $index; let isOdd = $odd; track item.id || i) {
                 <tr [class.row-odd]="isOdd" class="table-row">
                   <td class="cell-id">{{ item.id ? item.id.substring(0, 8) : 'N/A' }}</td>
                   <td class="cell-title">
