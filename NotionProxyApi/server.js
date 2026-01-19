@@ -262,6 +262,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// SPA fallback - serve index.html for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../tbb-dashboard/dist/my-app/index.html'));
+});
+
 app.post('/api/getPropFirmAccountSettings', async (req, res) => {
   try {
     const response = await axios.post(
