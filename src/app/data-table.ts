@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="data-table-container">
       <h2 class="table-title">Data Records</h2>
-      
+
       <div class="table-wrapper">
         @if (data && data.length > 0) {
           <table class="data-table">
@@ -25,7 +25,11 @@ import { CommonModule } from '@angular/common';
                 <tr [class.row-odd]="isOdd" class="table-row">
                   <td class="cell-id">{{ item.id ? item.id.substring(0, 8) : 'N/A' }}</td>
                   <td class="cell-title">
-                    {{ item.properties?.Name?.title?.[0]?.plain_text || item.properties?.Title?.title?.[0]?.plain_text || 'Untitled' }}
+                    {{
+                      item.properties?.Name?.title?.[0]?.plain_text ||
+                        item.properties?.Title?.title?.[0]?.plain_text ||
+                        'Untitled'
+                    }}
                   </td>
                   <td class="cell-date">
                     {{ formatDate(item.properties?.Date?.date?.start) }}
@@ -80,7 +84,12 @@ import { CommonModule } from '@angular/common';
       }
 
       .table-header {
-        background: linear-gradient(90deg, var(--orange-red), var(--vivid-pink), var(--electric-violet));
+        background: linear-gradient(
+          90deg,
+          var(--orange-red),
+          var(--vivid-pink),
+          var(--electric-violet)
+        );
         color: white;
       }
 
@@ -219,29 +228,29 @@ export class DataTableComponent {
 
   getStatus(item: any): string {
     const properties = item.properties || {};
-    
+
     if (properties.Status?.select?.name) {
       return properties.Status.select.name;
     }
-    
+
     if (properties.Completed?.checkbox) {
       return 'Completed';
     }
-    
+
     return 'Active';
   }
 
   getStatusClass(item: any): string {
     const status = this.getStatus(item);
-    
+
     if (status === 'Completed') {
       return 'status-active';
     }
-    
+
     if (status === 'In Progress') {
       return 'status-pending';
     }
-    
+
     return 'status-inactive';
   }
 }
