@@ -1,19 +1,26 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SalesChartComponent } from './sales-chart';
-import { DataTableComponent } from './data-table';
+import { BestSellingComponent } from './best-selling';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SalesChartComponent, DataTableComponent],
+  imports: [RouterOutlet, SalesChartComponent, BestSellingComponent, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('my-app');
   protected readonly dataSignal = signal<any[]>([]);
+  protected readonly selectedPeriod = signal<'today' | 'week' | 'month' | 'year'>('month');
+
+  protected readonly totalSales = computed(() => this.calculateTotalSales());
+  protected readonly totalOrders = computed(() => this.dataSignal().length);
+  protected readonly completedOrders = computed(() => this.dataSignal().filter((d: any) => d.properties?.Status?.select?.name === 'Completed').length);
+  protected readonly totalRevenue = computed(() => this.calculateTotalRevenue());
 
   constructor(private http: HttpClient) {}
 
@@ -35,6 +42,22 @@ export class App {
 
   getAllData(): any[] {
     return this.dataSignal();
+  }
+
+  private calculateTotalSales(): number {
+    return this.dataSignal().reduce((sum: number, item: any) => {
+      const amount = item.properties?.Amount?.number || 0;
+      return sum + amount;
+    }, 0);
+  }
+
+  private calculateTotalRevenue(): number {
+    return this.dataSignal()
+      .filter((d: any) => d.properties?.Status?.select?.name === 'Completed')
+      .reduce((sum: number, item: any) => {
+        const amount = item.properties?.Amount?.number || 0;
+        return sum + amount;
+      }, 0);
   }
 
   async getAllPagesFromDB(startDate: Date, endDate: Date) {
