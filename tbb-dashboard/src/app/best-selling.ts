@@ -149,15 +149,15 @@ export class BestSellingComponent {
     this.data.forEach((item: any) => {
       const props = item.properties || {};
 
-      // Extract name from various possible fields
-      const itemName = props.Name?.title?.[0]?.plain_text ||
+      // Extract item name from rich_text field
+      const itemName = props.Item?.rich_text?.[0]?.plain_text ||
+                      props.Name?.title?.[0]?.plain_text ||
                       props.Title?.title?.[0]?.plain_text ||
-                      props.Item?.title?.[0]?.plain_text ||
                       'Unnamed Item';
 
-      // Extract quantity and price
+      // Extract quantity and price using correct property names with spaces
       const quantity = props.Quantity?.number || 1;
-      const price = props.Receipt_amount?.number || props.Amount?.number || 0;
+      const price = props['Receipt Amount']?.number || 0;
 
       if (itemMap.has(itemName)) {
         const existing = itemMap.get(itemName)!;
