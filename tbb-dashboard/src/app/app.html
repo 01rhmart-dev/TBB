@@ -298,6 +298,10 @@
     </div>
 
     <div class="charts-section">
+      <div class="chart-card income-card">
+        <h2>Total Sales Breakdown</h2>
+        <app-income-chart [data]="getAllData()"></app-income-chart>
+      </div>
       <div class="chart-card">
         <h2>Sales Trend</h2>
         <app-sales-chart [data]="getAllData()"></app-sales-chart>
