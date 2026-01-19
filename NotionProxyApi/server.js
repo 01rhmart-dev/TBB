@@ -283,7 +283,7 @@ app.post('/api/getPropFirmAccountSettings', async (req, res) => {
 
 // SPA fallback - serve index.html for any non-API routes (MUST BE LAST)
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, '../tbb-dashboard/dist/my-app/index.html'));
+  res.sendFile(path.join(__dirname, '../tbb-dashboard/dist/my-app/browser/index.html'));
 });
 
 app.listen(3000, () => console.log('✅ Server running at http://localhost:3000'));
