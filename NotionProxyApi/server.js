@@ -9,8 +9,16 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-app.use(cors());
+// Enhanced CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+}));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static Angular app files
 app.use(express.static(path.join(__dirname, '../tbb-dashboard/dist/my-app/browser')));
