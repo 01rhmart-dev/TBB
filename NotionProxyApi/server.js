@@ -262,11 +262,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// SPA fallback - serve index.html for any non-API routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../tbb-dashboard/dist/my-app/index.html'));
-});
-
 app.post('/api/getPropFirmAccountSettings', async (req, res) => {
   try {
     const response = await axios.post(
@@ -284,6 +279,11 @@ app.post('/api/getPropFirmAccountSettings', async (req, res) => {
   } catch (err) {
     res.status(err.response?.status || 500).json(err.response?.data || { error: 'Unknown error' });
   }
+});
+
+// SPA fallback - serve index.html for any non-API routes (MUST BE LAST)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '../tbb-dashboard/dist/my-app/index.html'));
 });
 
 app.listen(3000, () => console.log('✅ Server running at http://localhost:3000'));
