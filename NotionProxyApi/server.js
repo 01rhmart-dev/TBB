@@ -6,10 +6,14 @@ console.log("ENV:", process.env.NOTION_TOKEN);
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static Angular app files
+app.use(express.static(path.join(__dirname, '../tbb-dashboard/dist/my-app')));
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const fs = require('fs');
