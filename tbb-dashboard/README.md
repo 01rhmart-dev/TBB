@@ -1,9 +1,6 @@
-Builder.io - Setup command
+Setup command::
 npm install --prefix NotionProxyApi
-npm install
+npm install --prefix tbb-dashboard
 
-
-
-Builder.io - Dev command
-npm run dev --prefix NotionProxyApi
-npm run start 
+Dev command::
+npm run build --prefix tbb-dashboard && node NotionProxyApi/server.js
