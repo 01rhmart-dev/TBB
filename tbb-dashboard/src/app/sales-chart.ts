@@ -227,7 +227,7 @@ export class SalesChartComponent {
 
         dayNameMap.set(dayKey, timeLabel);
 
-        const amount = props.Receipt_amount?.number || props.Amount?.number || 0;
+        const amount = props['Receipt Amount']?.number || 0;
         dayMap.set(dayKey, (dayMap.get(dayKey) || 0) + amount);
       }
     });
