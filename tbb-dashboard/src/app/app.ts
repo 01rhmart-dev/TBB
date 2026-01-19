@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
 export class App {
   protected readonly title = signal('my-app');
   protected readonly dataSignal = signal<any[]>([]);
-  protected selectedPeriod: 'today' | 'week' | 'month' | 'year' = 'month';
+  protected readonly selectedPeriod = signal<'today' | 'week' | 'month' | 'year'>('month');
 
   constructor(private http: HttpClient) {}
 
