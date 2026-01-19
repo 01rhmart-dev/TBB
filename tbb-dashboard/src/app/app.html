@@ -267,10 +267,10 @@
         <h1>Food Tracker</h1>
       </div>
       <div class="filter-buttons">
-        <button class="filter-btn" [class.active]="selectedPeriod === 'today'" (click)="selectedPeriod = 'today'">Today</button>
-        <button class="filter-btn" [class.active]="selectedPeriod === 'week'" (click)="selectedPeriod = 'week'">This Week</button>
-        <button class="filter-btn" [class.active]="selectedPeriod === 'month'" (click)="selectedPeriod = 'month'">This Month</button>
-        <button class="filter-btn" [class.active]="selectedPeriod === 'year'" (click)="selectedPeriod = 'year'">This Year</button>
+        <button class="filter-btn" [class.active]="selectedPeriod() === 'today'" (click)="selectedPeriod.set('today')">Today</button>
+        <button class="filter-btn" [class.active]="selectedPeriod() === 'week'" (click)="selectedPeriod.set('week')">This Week</button>
+        <button class="filter-btn" [class.active]="selectedPeriod() === 'month'" (click)="selectedPeriod.set('month')">This Month</button>
+        <button class="filter-btn" [class.active]="selectedPeriod() === 'year'" (click)="selectedPeriod.set('year')">This Year</button>
       </div>
     </div>
 
