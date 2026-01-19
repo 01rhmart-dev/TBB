@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SalesChartComponent } from './sales-chart';
 import { BestSellingComponent } from './best-selling';
