@@ -45,7 +45,7 @@ export class App {
 
   get totalSales(): number {
     return this.dataSignal().reduce((sum: number, item: any) => {
-      const amount = item.properties?.Amount?.number || 0;
+      const amount = item.properties?.Receipt_amount?.number || 0;
       return sum + amount;
     }, 0);
   }
@@ -55,14 +55,20 @@ export class App {
   }
 
   get completedOrders(): number {
-    return this.dataSignal().filter((d: any) => d.properties?.Status?.select?.name === 'Completed').length;
+    return this.dataSignal().filter((d: any) => {
+      const status = d.properties?.Status?.select?.name || '';
+      return status.toLowerCase() === 'completed' || status.toLowerCase() === 'paid';
+    }).length;
   }
 
   get totalRevenue(): number {
     return this.dataSignal()
-      .filter((d: any) => d.properties?.Status?.select?.name === 'Completed')
+      .filter((d: any) => {
+        const status = d.properties?.Status?.select?.name || '';
+        return status.toLowerCase() === 'completed' || status.toLowerCase() === 'paid';
+      })
       .reduce((sum: number, item: any) => {
-        const amount = item.properties?.Amount?.number || 0;
+        const amount = item.properties?.Receipt_amount?.number || 0;
         return sum + amount;
       }, 0);
   }
