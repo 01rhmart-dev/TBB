@@ -1,33 +1,38 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, CommonModule } from '@angular/router';
 import { SalesChartComponent } from './sales-chart';
+import { DataTableComponent } from './data-table';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SalesChartComponent],
+  imports: [RouterOutlet, CommonModule, SalesChartComponent, DataTableComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('my-app');
+  protected readonly getAllData = signal<any[]>([]);
 
   constructor(private http: HttpClient){
 
   }
 
   async ngOnInit() {
-    this.getAllData();
+    this.fetchAllData();
   }
 
-  async getAllData(): Promise<void> {
+  async fetchAllData(): Promise<void> {
     const body: any = {};
       const proxyResponse: any = await firstValueFrom(
       this.http.post("http://localhost:3000/api/getAllPagesFromDB", body)
     );
 
     console.log("proxyResponse",proxyResponse)
+    if (proxyResponse && proxyResponse.results) {
+      this.getAllData.set(proxyResponse.results);
+    }
 
   }
 
