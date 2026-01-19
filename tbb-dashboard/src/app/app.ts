@@ -13,11 +13,11 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 })
 export class App {
   protected readonly title = signal('my-app');
-  protected readonly getAllData = signal<any[]>([]);
+  protected readonly dataSignal = signal<any[]>([]);
 
   constructor(private http: HttpClient) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.fetchAllData();
   }
 
@@ -29,8 +29,12 @@ export class App {
 
     console.log('proxyResponse', proxyResponse);
     if (proxyResponse && proxyResponse.results) {
-      this.getAllData.set(proxyResponse.results);
+      this.dataSignal.set(proxyResponse.results);
     }
+  }
+
+  getAllData(): any[] {
+    return this.dataSignal();
   }
 
   async getAllPagesFromDB(startDate: Date, endDate: Date) {
