@@ -1,36 +1,77 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SalesChartComponent } from './sales-chart';
-import { DataTableComponent } from './data-table';
+import { BestSellingComponent } from './best-selling';
+import { IncomeChartComponent } from './income-chart';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SalesChartComponent, DataTableComponent],
+  imports: [RouterOutlet, SalesChartComponent, BestSellingComponent, IncomeChartComponent, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('my-app');
-  protected readonly getAllData = signal<any[]>([]);
+  protected readonly dataSignal = signal<any[]>([]);
+  protected readonly selectedPeriod = signal<'today' | 'week' | 'month' | 'year'>('month');
 
   constructor(private http: HttpClient) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.fetchAllData();
   }
 
   async fetchAllData(): Promise<void> {
     const body: any = {};
-    const proxyResponse: any = await firstValueFrom(
-      this.http.post('http://localhost:3000/api/getAllPagesFromDB', body),
-    );
+    try {
+      const proxyResponse: any = await firstValueFrom(
+        this.http.post('/api/getAllPagesFromDB', body),
+      );
 
-    console.log('proxyResponse', proxyResponse);
-    if (proxyResponse && proxyResponse.results) {
-      this.getAllData.set(proxyResponse.results);
+      console.log('proxyResponse', proxyResponse);
+      if (proxyResponse && proxyResponse.results) {
+        this.dataSignal.set(proxyResponse.results);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
+  }
+
+  getAllData(): any[] {
+    return this.dataSignal();
+  }
+
+  get totalSales(): number {
+    return this.dataSignal().reduce((sum: number, item: any) => {
+      const amount = item.properties?.['Receipt Amount']?.number || 0;
+      return sum + amount;
+    }, 0);
+  }
+
+  get totalOrders(): number {
+    return this.dataSignal().length;
+  }
+
+  get completedOrders(): number {
+    return this.dataSignal().filter((d: any) => {
+      const status = d.properties?.Status?.select?.name || '';
+      return status.toLowerCase() === 'completed' || status.toLowerCase() === 'paid';
+    }).length;
+  }
+
+  get totalRevenue(): number {
+    return this.dataSignal()
+      .filter((d: any) => {
+        const status = d.properties?.Status?.select?.name || '';
+        return status.toLowerCase() === 'completed' || status.toLowerCase() === 'paid';
+      })
+      .reduce((sum: number, item: any) => {
+        const amount = item.properties?.['Receipt Amount']?.number || 0;
+        return sum + amount;
+      }, 0);
   }
 
   async getAllPagesFromDB(startDate: Date, endDate: Date) {
